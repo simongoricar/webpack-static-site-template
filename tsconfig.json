@@ -3,7 +3,7 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "config/webpack.config.js"
+    "config/webpack.config"
   ],
   "compilerOptions": {
     "incremental": true,
