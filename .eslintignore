@@ -1,0 +1,25 @@
+## Yarn and NPM
+.yarn
+node_modules
+
+## Build files
+dist
+
+## Eslint
+.eslintrc.js
+.eslintignore
+
+## Non-code files
+**/*.njk
+**/*.css
+**/*.scss
+**/*.sass
+**/*.md
+
+**/*.jpg
+**/*.jpeg
+**/*.tiff
+**/*.png
+**/*.apng
+
+config

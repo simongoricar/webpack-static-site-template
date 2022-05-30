@@ -1,0 +1,28 @@
+{
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "config/webpack.config.js"
+  ],
+  "compilerOptions": {
+    "incremental": true,
+    "target": "ES5",
+    "module": "commonjs",
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "moduleResolution": "node"
+  }
+}
