@@ -1,4 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -22,21 +24,28 @@ const pages: Page[] = [];
 
 const pageNameList: string[] = fs.readdirSync(pagesBasePath);
 pageNameList.forEach((pageName: string) => {
-    const hasHtml: boolean = fs.existsSync(path.join(pagesBasePath, pageName, `${pageName}.html`));
+    const fullDirectoryPath = path.join(pagesBasePath, pageName);
+
+    // Ignore normal files in the "pages" directory.
+    if (!fs.lstatSync(fullDirectoryPath).isDirectory()) {
+        return;
+    }
+
+    const hasHtml: boolean = fs.existsSync(path.join(fullDirectoryPath, `${pageName}.html`));
     if (!hasHtml) {
         throw new Error(
           `Page error: expected directory src/pages/${pageName} to contain ${pageName}.html, but the file is missing!`
         );
     }
 
-    const hasJS: boolean = fs.existsSync(path.join(pagesBasePath, pageName, "index.js"));
-    const hasTS: boolean = fs.existsSync(path.join(pagesBasePath, pageName, "index.ts"));
+    const hasJS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.js"));
+    const hasTS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.ts"));
 
     let entryScript: string;
     if (hasJS) {
-        entryScript = path.join(pagesBasePath, pageName, "index.js");
+        entryScript = path.join(fullDirectoryPath, "index.js");
     } else if (hasTS) {
-        entryScript = path.join(pagesBasePath, pageName, "index.ts");
+        entryScript = path.join(fullDirectoryPath, "index.ts");
     } else {
         throw new Error(
           `Page error: expected directory src/pages/${pageName} to contain either index.js or index.ts, found neither!`
@@ -80,9 +89,32 @@ const webpackPlugins: any[] = pages.map((page: Page) => {
 const config = {
     mode: IS_PRODUCTION ? "production" : "development",
     entry: webpackEntryMap,
-    plugins: webpackPlugins,
+    plugins: [
+      ...webpackPlugins,
+      new MiniCssExtractPlugin({
+          filename: "[name].css",
+          chunkFilename: "[id].css",
+      }),
+    ],
     module: {
         rules: [
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    // Creates `style` nodes from JS strings
+                    IS_PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader",
+                    // Translates CSS into CommonJS
+                    "css-loader",
+                    // Compiles Sass to CSS
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            implementation: require("sass"),
+                            sourceMap: !IS_PRODUCTION
+                        }
+                    },
+                ],
+            },
             {
                 test: /\.(js|ts|jsx|tsx)/i,
                 loader: "babel-loader",
