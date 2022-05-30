@@ -1,0 +1,29 @@
+{
+  "name": "gulp-nunjucks-sass-template",
+  "version": "2.1.0",
+  "description": "A Gulp 4 template including SCSS, Nunjucks, TypeScript (via webpack) and more.",
+  "repository": "git@github.com:DefaultSimon/gulp-nunjucks-sass-template.git",
+  "author": "Simon Goričar <simon.peter.goricar@gmail.com>",
+  "license": "MIT",
+  "packageManager": "yarn@3.2.1",
+  "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
+    "@types/babel__core": "^7",
+    "@types/babel__preset-env": "^7",
+    "@types/eslint": "^8",
+    "babel-loader": "^8.2.5",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.1",
+    "eslint": "^8.16.0",
+    "file-loader": "^6.2.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "sass": "^1.52.1",
+    "sass-loader": "^13.0.0",
+    "style-loader": "^3.3.1",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  }
+}
