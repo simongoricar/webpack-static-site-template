@@ -1,7 +1,7 @@
 {
-  "name": "gulp-nunjucks-sass-template",
-  "version": "2.1.0",
-  "description": "A Gulp 4 template including SCSS, Nunjucks, TypeScript (via webpack) and more.",
+  "name": "webpack-nunjucks-sass-template",
+  "version": "1.0.0",
+  "description": "A Webpack 5 template TODO.",
   "repository": "git@github.com:DefaultSimon/gulp-nunjucks-sass-template.git",
   "author": "Simon Goričar <simon.peter.goricar@gmail.com>",
   "license": "MIT",

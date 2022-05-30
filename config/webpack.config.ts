@@ -2,6 +2,13 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const babelConfig = require("../babel.config");
+
+/*
+ * CONSTANTS AND TYPES
+ */
+const IS_PRODUCTION: boolean = process.env.NODE_ENV === "production";
+
 interface Page {
     name: string,
     entryScript: string,
@@ -43,9 +50,9 @@ pageNameList.forEach((pageName: string) => {
 });
 
 // Log pages for comfort.
-console.log("Pages to build: ");
+console.log("Detected pages: ");
 pages.forEach((page: Page) => {
-    console.log(" - " + page.name);
+    console.log(` - ${page.name} (script entry point: ${path.basename(page.entryScript)})`);
 });
 console.log();
 
@@ -71,9 +78,18 @@ const webpackPlugins: any[] = pages.map((page: Page) => {
 
 
 const config = {
-    mode: "development",
+    mode: IS_PRODUCTION ? "production" : "development",
     entry: webpackEntryMap,
     plugins: webpackPlugins,
+    module: {
+        rules: [
+            {
+                test: /\.(js|ts|jsx|tsx)/i,
+                loader: "babel-loader",
+                options: babelConfig,
+            },
+        ]
+    }
 };
 
 module.exports = config;

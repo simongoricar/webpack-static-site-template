@@ -2,9 +2,6 @@
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": [
-    "config/webpack.config"
-  ],
   "compilerOptions": {
     "incremental": true,
     "target": "ES5",
