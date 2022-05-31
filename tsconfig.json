@@ -10,6 +10,7 @@
       "DOM",
       "ESNext"
     ],
+    "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,
     "jsx": "react",

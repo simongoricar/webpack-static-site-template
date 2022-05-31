@@ -1,18 +1,27 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+import { Configuration, LoaderContext } from "webpack";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import fs from "node:fs";
+import path from "node:path";
 
-const fs = require("node:fs");
-const path = require("node:path");
+import { Environment, FileSystemLoader } from "nunjucks";
 
-const babelConfig = require("../babel.config");
+import babelConfig from "../babel.config";
 
 /*
  * CONSTANTS AND TYPES
  */
 const IS_PRODUCTION: boolean = process.env.NODE_ENV === "production";
+const IS_ONE_SHOT_BUILD: boolean = process.env.IS_SINGLE_BUILD === "true";
+
+const nunjucksTemplatePath = path.resolve("./src/templates");
+const nunjucksEnv: Environment = new Environment(
+  new FileSystemLoader(nunjucksTemplatePath, {watch: !IS_ONE_SHOT_BUILD, noCache: false})
+);
 
 interface Page {
     name: string,
-    entryScript: string | null,
+    htmlPath: string,
+    entryScriptPath: string | null,
 }
 
 /*
@@ -29,39 +38,67 @@ pageNameList.forEach((pageName: string) => {
     if (!fs.lstatSync(fullDirectoryPath).isDirectory()) {
         return;
     }
-
     // Ignore directories that start with . or _
     if (pageName.startsWith(".") || pageName.startsWith("_")) {
         return;
     }
 
-    const hasHtml: boolean = fs.existsSync(path.join(fullDirectoryPath, `${pageName}.html`));
-    if (!hasHtml) {
+    const nunjucksPath = path.join(fullDirectoryPath, `${pageName}.njk`);
+    const htmlPath = path.join(fullDirectoryPath, `${pageName}.html`);
+
+    const hasNunjucks: boolean = fs.existsSync(nunjucksPath);
+    const hasHtml: boolean = fs.existsSync(htmlPath);
+
+    let entryHtmlPath: string;
+
+    if (hasNunjucks && hasHtml) {
+        throw new Error(
+          `Page error: expected directory src/pages/${pageName} either ${pageName}.html or ${pageName}.njk, found both!`
+        );
+    } else if (hasNunjucks) {
+        entryHtmlPath = nunjucksPath;
+    } else if (hasHtml) {
+        entryHtmlPath = htmlPath;
+    } else {
         throw new Error(
           `Page error: expected directory src/pages/${pageName} to contain ${pageName}.html, but the file is missing!`
         );
     }
 
-    const hasJS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.js"));
-    const hasTS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.ts"));
+    const jsPath = path.join(fullDirectoryPath, "index.js");
+    const tsPath = path.join(fullDirectoryPath, "index.ts");
 
-    let entryScript: string | null = null;
+    const hasJS: boolean = fs.existsSync(jsPath);
+    const hasTS: boolean = fs.existsSync(tsPath);
+
+    let entryScriptPath: string | null;
+
     if (hasJS) {
-        entryScript = path.join(fullDirectoryPath, "index.js");
+        entryScriptPath = path.join(fullDirectoryPath, "index.js");
     } else if (hasTS) {
-        entryScript = path.join(fullDirectoryPath, "index.ts");
+        entryScriptPath = path.join(fullDirectoryPath, "index.ts");
+    } else {
+        entryScriptPath = null;
     }
 
     pages.push({
         name: pageName,
-        entryScript
+        htmlPath: entryHtmlPath,
+        entryScriptPath
     });
 });
 
 // Log pages for comfort.
 console.log("Detected pages: ");
 pages.forEach((page: Page) => {
-    console.log(` - ${page.name} (script entry point: ${path.basename(page.entryScript)})`);
+    let entryInfo: string = "";
+    if (page.entryScriptPath !== null) {
+        entryInfo = `script entry: ${path.basename(page.entryScriptPath)}`
+    }
+
+    console.log(
+      ` - ${page.name} (${entryInfo})`
+    );
 });
 console.log();
 
@@ -71,9 +108,9 @@ console.log();
 const webpackEntryMap: Record<string, any> = {};
 pages.forEach((page: Page) => {
     // Script entry per-page
-    if (page.entryScript !== null) {
+    if (page.entryScriptPath !== null) {
         webpackEntryMap[page.name] = {
-            "import": page.entryScript,
+            "import": page.entryScriptPath,
             "filename": `scripts/${page.name}.js`,
         };
     }
@@ -83,14 +120,15 @@ const webpackPlugins: any[] = pages.map((page: Page) => {
     // HTML entry per-page (with automatically injected page-specific script chunk if available)
     return new HtmlWebpackPlugin({
         filename: `${page.name}.html`,
-        template: path.join(pagesBasePath, page.name, `${page.name}.html`),
+        template: page.htmlPath,
         inject: "head",
-        chunks: page.entryScript !== null ? [page.name] : []
+        chunks: page.entryScriptPath !== null ? [page.name] : []
     });
 });
 
+// TODO Nunjucks!
 
-const config = {
+const config: Configuration = {
     mode: IS_PRODUCTION ? "production" : "development",
     entry: {
         ...webpackEntryMap,
@@ -169,6 +207,27 @@ const config = {
             {
                 test: /\.html$/i,
                 loader: "html-loader"
+            },
+            {
+                test: /\.njk$/i,
+                loader: "html-loader",
+                options: {
+                    preprocessor: (content: string | Buffer, context: LoaderContext<unknown>) => {
+                        let rawContent: string;
+                        if (typeof content === "string") {
+                            rawContent = content;
+                        } else {
+                            rawContent = content.toString("utf-8");
+                        }
+
+                        try {
+                            return nunjucksEnv.renderString(rawContent, {});
+                        } catch (err) {
+                            // @ts-ignore
+                            context.emitError(err);
+                        }
+                    },
+                }
             }
         ]
     },

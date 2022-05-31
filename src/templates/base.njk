@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="{% block htmlLang %}en{% endblock %}">
+
+{% block head %}
+<head>
+    {% block headStart %}{% endblock %}
+
+    {% block headMeta %}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    {% endblock %}
+
+    <title>{% block headTitle %}{% endblock %}</title>
+
+    {% block headEnd %}{% endblock %}
+</head>
+{% endblock %}
+
+{# The whole body block can be overriden by using the "body" block #}
+{# NOTE: If the "body" block is used, using any blocks contained in it (in the template) will have no effect! #}
+{% block body %}
+<body>
+
+    {% block headerOuter %}
+    <header class="header" role="banner">
+        {% block header %}
+        {% endblock %}
+    </header>
+    {% endblock %}
+
+    {% block mainOuter %}
+    <main class="main" role="main">
+        {% block main %}
+        {% endblock %}
+    </main>
+    {% endblock %}
+
+    {% block footerOuter %}
+    <footer class="footer" role="contentinfo">
+        {% block footer %}
+        {% endblock %}
+    </footer>
+    {% endblock %}
+
+    {% block scriptsBefore %}{% endblock %}
+    {# You may add some global scripts here if you wish. #}
+    {% block scriptsAfter %}{% endblock %}
+
+</body>
+{% endblock %}
+</html>
