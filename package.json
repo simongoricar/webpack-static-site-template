@@ -8,7 +8,8 @@
   "packageManager": "yarn@3.2.1",
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --config config/webpack.config.ts",
-    "build": "NODE_ENV=production webpack build --config config/webpack.config.ts"
+    "build": "NODE_ENV=production webpack build --config config/webpack.config.ts",
+    "build-dev": "NODE_ENV=development webpack build --config config/webpack.config.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",
@@ -33,8 +34,8 @@
     "eslint-plugin-react": "^7.30.0",
     "eslint-plugin-react-hooks": "^4.5.0",
     "file-loader": "^6.2.0",
+    "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
-    "mini-css-extract-plugin": "^2.6.0",
     "sass": "^1.52.1",
     "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",

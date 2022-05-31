@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -13,7 +12,7 @@ const IS_PRODUCTION: boolean = process.env.NODE_ENV === "production";
 
 interface Page {
     name: string,
-    entryScript: string,
+    entryScript: string | null,
 }
 
 /*
@@ -31,6 +30,11 @@ pageNameList.forEach((pageName: string) => {
         return;
     }
 
+    // Ignore directories that start with . or _
+    if (pageName.startsWith(".") || pageName.startsWith("_")) {
+        return;
+    }
+
     const hasHtml: boolean = fs.existsSync(path.join(fullDirectoryPath, `${pageName}.html`));
     if (!hasHtml) {
         throw new Error(
@@ -41,15 +45,11 @@ pageNameList.forEach((pageName: string) => {
     const hasJS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.js"));
     const hasTS: boolean = fs.existsSync(path.join(fullDirectoryPath, "index.ts"));
 
-    let entryScript: string;
+    let entryScript: string | null = null;
     if (hasJS) {
         entryScript = path.join(fullDirectoryPath, "index.js");
     } else if (hasTS) {
         entryScript = path.join(fullDirectoryPath, "index.ts");
-    } else {
-        throw new Error(
-          `Page error: expected directory src/pages/${pageName} to contain either index.js or index.ts, found neither!`
-        );
     }
 
     pages.push({
@@ -70,41 +70,70 @@ console.log();
  */
 const webpackEntryMap: Record<string, any> = {};
 pages.forEach((page: Page) => {
-    webpackEntryMap[page.name] = {
-        "import": page.entryScript,
-        "filename": `${page.name}.js`,
-    };
+    // Script entry per-page
+    if (page.entryScript !== null) {
+        webpackEntryMap[page.name] = {
+            "import": page.entryScript,
+            "filename": `scripts/${page.name}.js`,
+        };
+    }
 });
 
 const webpackPlugins: any[] = pages.map((page: Page) => {
+    // HTML entry per-page (with automatically injected page-specific script chunk if available)
     return new HtmlWebpackPlugin({
         filename: `${page.name}.html`,
         template: path.join(pagesBasePath, page.name, `${page.name}.html`),
         inject: "head",
-        chunks: [page.name]
+        chunks: page.entryScript !== null ? [page.name] : []
     });
-})
+});
 
 
 const config = {
     mode: IS_PRODUCTION ? "production" : "development",
-    entry: webpackEntryMap,
+    entry: {
+        ...webpackEntryMap,
+    },
     plugins: [
-      ...webpackPlugins,
-      new MiniCssExtractPlugin({
-          filename: "[name].css",
-          chunkFilename: "[id].css",
-      }),
+        ...webpackPlugins,
     ],
+    output: {
+        filename: "[name]-[hash][ext]",
+        clean: true,
+        assetModuleFilename: "./assets/[name]-[hash][ext]",
+    },
     module: {
         rules: [
+            /*
+             * The following rule takes care of emiting CSS files or hot-loading them when developing.
+             */
+            ...(
+              IS_PRODUCTION ? [
+                  {
+                      test: /\.s[ac]ss$/i,
+                      // Emits the CSS file
+                      type: "asset/resource",
+                      generator: {
+                          filename: "./styles/[name]-[hash].css"
+                      }
+                  }
+              ] : [
+                  {
+                      test: /\.s[ac]ss$/i,
+                      use: [
+                          "style-loader",
+                          "css-loader"
+                      ]
+                  }
+              ]
+            ),
+            /*
+             * The following rule converts SCSS/Sass to CSS.
+             */
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    // Creates `style` nodes from JS strings
-                    IS_PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader",
-                    // Translates CSS into CommonJS
-                    "css-loader",
                     // Compiles Sass to CSS
                     {
                         loader: "sass-loader",
@@ -115,13 +144,34 @@ const config = {
                     },
                 ],
             },
+            /*
+             * The following rule uses Babel to convert modern JS syntax to ES5.
+             */
             {
                 test: /\.(js|ts|jsx|tsx)/i,
+                include: path.resolve("src"),
                 loader: "babel-loader",
                 options: babelConfig,
             },
+            /*
+             * The following rule emits any used images into the build folder.
+             */
+            {
+                test: /\.(jpg|jpeg|png|webp|gif|svg)/i,
+                type: "asset/resource",
+                generator: {
+                    filename: "./assets/images/[name]-[hash][ext]"
+                }
+            },
+            /*
+             * This rule parses HTML files and makes sure any <link>/<script>/... tags are properly parsed.
+             */
+            {
+                test: /\.html$/i,
+                loader: "html-loader"
+            }
         ]
-    }
+    },
 };
 
 module.exports = config;
