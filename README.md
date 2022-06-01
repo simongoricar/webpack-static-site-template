@@ -13,19 +13,20 @@
 
 ## Goals
 - multi-page static site builder,
-- normal HTML for smaller sites with support for [Nunjucks](https://mozilla.github.io/nunjucks/) templating for more complex tasks,
-- [TypeScript](https://www.typescriptlang.org/) with modern JS features (ESNext),
+- write normal HTML for smaller sites, but with the ability to use [Nunjucks](https://mozilla.github.io/nunjucks/) templating for more complex tasks,
+- write [TypeScript](https://www.typescriptlang.org/) for type-safety with modern JS features (ESNext),
 - cleaner stylesheet writing with [SCSS/Sass](https://sass-lang.com/),
 - automatic minification in production builds.
 
 
 ## Features
-- *General*: Automatic page detection (practically no configuration).
-- *HTML*: Support for both normal HTML (`.html`) and [Nunjucks](https://mozilla.github.io/nunjucks/) templating (`.njk` extension). Renders at *build time* for static websites. Includes minification in production builds.
+- *General*: Automatic page detection (practically no configuration, just a matter of creating a directory inside `src/pages` and creating relevant files).
+- *HTML*: Support for both normal HTML (`.html`) and [Nunjucks](https://mozilla.github.io/nunjucks/) templating (`.njk` extension). Renders at *build time*, includes HTML minification in production builds.
 - *CSS*: [SCSS](https://sass-lang.com/) (or Sass) for stylesheet clarity and reuse. Includes minification in production builds.
 - *JS*: [TypeScript](https://www.typescriptlang.org/) with support for the latest features (ESNext), compiled to ES5.
 - *IMAGES and other ASSETS*: Automatically copied into and linked from build directory when used in source.
-- *DEVELOPMENT*: Live browser reload when developing.
+- *DEVELOPMENT*: Live browser reload when developing,
+- *LINTING*: for consistent code style there's support for TypeScript linting via [eslint](https://eslint.org/) and SCSS linting via [Stylelint](https://stylelint.io/).
 
 ---
 
@@ -82,9 +83,15 @@ src
  |  > When using the .njk extension, the file will be processed for Nunjucks templating.
  |  >
  |  > You may of course want to add other files here, such as some 
- |    stylesheets (`sample.scss`) and import them from the HTML.
+ |    stylesheets (`sample.scss`) and import them. However:
+ |  > When wanting to use for example the global stylesheet (from src/styles) in your
+      page, you can "import" it in your page's entry script like so:
+ |  >     import "../../styles/main.scss"
+ |  >
+ |  > NOTE: You should not import any stylesheets inside the HTML/NJK file, because the
+ |    development live-reload version will break.
+ |  >
  |  > See src/pages/README.md for more info.
- |
  |
  |- styles
  |  > Place your global stylesheets here!
@@ -92,6 +99,8 @@ src
  |  > Depending on the project, you will likely have some shared page styles, which
  |    can reside here. Each page that wants to use the global styles should link to 
  |    the `main.scss` file (see src/pages/README.md or the example pages).
+ |  > A good starting point is already available, but you may opt to use 
+ |    nothing or remove individual parts of the prepared stylesheet template - see below.
 ```
 
 ### 3.1 HTML: Nunjucks
@@ -101,16 +110,16 @@ For more on templating using Nunjucks, read [**Nunjucks' documentation**](https:
 If your page files have the `.njk` extension, webpack will automatically run them through Nunjucks. If you wish to use some templates via e.g. `{% extend "base.njk" %}`, you may add those templates into the `src/templates` directory and refrer to them in your pages directly (meaning `base.njk`, not `../templates/base.njk`).
 
 ### 3.2 Stylesheets: SCSS or Sass
-> **SCSS** is a stylesheet language that compiles to CSS. This project uses the [Dart Sass](https://sass-lang.com) compiler.
+> **SCSS** is a stylesheet language that compiles to CSS. This template uses the [Dart Sass](https://sass-lang.com) compiler, which should generally have the latest SCSS features.
 
-Stylesheets are intended to be written in [SCSS](https://sass-lang.com/documentation/syntax) for easier and cleaner code. You may of course opt to have page-specific stylesheets as in the example (`index.scss` and `sample.scss`), but you're also free to have a single main stylesheet in the `styles` directory. The example pages actually combine these two approaches, but adapt the techniques to your taste.
+Stylesheets are intended to be written in [SCSS](https://sass-lang.com/documentation/syntax) for easier and cleaner code. You may of course opt to have page-specific stylesheets as in the example (`index.scss` and `sample.scss`), but you're also free to have a single main stylesheet in the `styles` directory. The example pages actually combine these two approaches, but adapt the techniques to your taste. Just make sure that your individual page scripts import the stylesheets you want the page to use (see page examples).
 
-This project includes several small templates:
+This project includes several small libraries as a starting point:
 - [**normalize.css**](https://necolas.github.io/normalize.css/) for a consistent base across browsers,
 - [**pure.css**](https://purecss.io/) as the style foundation,
 - [**include-media**](https://eduardoboucas.github.io/include-media/) as the SCSS library for @media queries. Reasonable breakpoints were set with help from [a bunch](https://www.freecodecamp.org/news/the-100-correct-way-to-do-css-breakpoints-88d6a5ba1862/) [of](https://flaviocopes.com/css-breakpoints/) [articles](https://howto-wordpress-tips.com/responsive-breakpoints-tutorial/) [and frameworks](https://polypane.app/blog/css-breakpoints-used-by-popular-css-frameworks/) and packed into the `modules/_media.scss` module with shorthands for easy work,
-- **Bones**, a personal set of very common rules compacted into mixins and CSS classes. Short documentation is available in `bones.njk`/`bones.html` and the source is available at `src/scss/vendor/bones`.
-- A variety of basic sizing, animation-related and other mixins, available in `src/scss/modules`.
-- `rem` units scaled to `10px` (`62.5%`, adjusted in `src/scss/base/_defaults.scss`).
+- **Bones**, a personal set of very common rules compacted into mixins and CSS classes. Short documentation is available in `sample.njk`/`sample.html` and the source is available at `src/styles/vendor/bones`.
+- A variety of basic sizing, animation-related and other mixins to get you started, available in `src/scss/modules`.
+- `rem` units scaled to `10px` (`62.5%`, adjusted in `src/styles/ventor/bones/_bones.scss`).
 
-The larger modules are located in `src/styles/vendor` and can be easily removed if you do not need them by deleting the relevant directory and removing the import in `main.scss`.
+The larger modules are located in `src/styles/vendor` and can be easily removed if you do not need them for your project by deleting the relevant directory and removing the import in `main.scss`.
