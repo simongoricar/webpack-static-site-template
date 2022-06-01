@@ -5,16 +5,174 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Site</title>
-
-    <link href="../../styles/main.scss" rel="stylesheet">
-    <link href="sample.scss" rel="stylesheet">
 </head>
-<body>
-    <h1>Sample page!</h1>
-    <img src="../../assets/images/sample-image.jpg" />
-    {# Test test! #}
-    {% for i in range(0, 5) -%}
-        {{ i }},
-    {%- endfor %}
+<body class="page--bones">
+<div class="container">
+    <div class="container__child page__content mt20">
+        {# ##############
+              INTRODUCTION
+            ############## #}
+        <h1 class="text-center">Bones</h1>
+        <h6 class="text-center">tiny (S)CSS addon</h6>
+        <p class="mt40 text-justify">
+            Bones is a tiny SCSS addon that includes <i>very</i> common style rules compacted into
+            CSS classes and SCSS mixins, such as <code>text-left</code> alignment, <code>pb10</code> bottom padding
+            and <code>flex</code> display classes and several other handy mixins.
+        </p>
+        <p class="text-justify">
+
+            It is a small cherry on top of <a href="https://purecss.io"><b>pure.css</b></a> and
+            <a href="https://necolas.github.io/normalize.css/"><b>normalize.css</b></a> and contains only the most
+            common style rules I tend to use. Combining Bones with those two serves well as a beginning for pretty much
+            any website, complete with utility CSS classes, grids and basic support for mobile out-of-the-box.
+        </p>
+        <p class="text-justify">
+            You are of course welcome to remove any of these libraries by editing the <code>@use</code> rules in
+            <code>main.scss</code> and removing the associated folder in the <code>vendor</code> directory.
+            Inspired by other boilerplates like <a href="https://getskeleton.com/">Skeleton</a> and
+            <a href="https://github.com/acahir/Barebones">Barebones</a>.
+        </p>
+        <hr>
+
+        {# ##############
+              CSS GRID
+           ############## #}
+        <h3>Grids</h3>
+        <p class="text-justify">
+            <i>pure.css</i> already includes <a href="https://purecss.io/grids/">two grid systems (5ths and 24ths)</a>,
+            however Bones includes a few more (removing either or both is as simple as editing the import in
+            <code>main.scss</code> and <code>vendor/purecss/_index.scss</code>).
+            It uses CSS's grid system; here are six more basic grid setups:
+        </p>
+        <ul>
+            <li><code>grid--single</code></li>
+            <li><code>grid--halves</code></li>
+            <li><code>grid--thirds</code></li>
+            <li><code>grid--quarters</code></li>
+            <li><code>grid--sixths</code></li>
+        </ul>
+        <p>
+            Each one corresponds to a grid with that number of columns.
+            By default, grid elements stretch to their entire available space. To center instead, use:
+        </p>
+        <ul>
+            <li><code>grid__center-horizontal</code></li>
+            <li><code>grid__center-vertical</code></li>
+        </ul>
+        <p>
+            Some examples:
+        </p>
+
+        <div class="mt30 mb40 flex flex--column flex--center">
+            <span id="grid-demo1" class="grid--quarters full-width text-center">
+                <span>First</span>
+                <span>Second</span>
+                <span>Third</span>
+                <span>Fourth</span>
+            </span>
+            <span class="demo-annotation">
+                A <code>grid--quarters</code> grid.
+            </span>
+
+            <pre>
+<code class="multiline">&lt;span class="grid--quarters">
+    &lt;span>First&lt;/span>
+    &lt;span>Second&lt;/span>
+    &lt;span>Third&lt;/span>
+    &lt;span>Fourth&lt;/span>
+&lt;/span>
+</code>
+</pre>
+
+        </div>
+
+        <div class="mt30 mb40 flex flex--column flex--center">
+                <span id="grid-demo2" class="grid--sixths">
+                    <span>First</span>
+                    <span>Second</span>
+                    <span class="grid__center-horizontal">Third</span>
+                    <span class="grid__center-vertical">Fourth</span>
+                    <span>Fifth</span>
+                    <span>Sixth</span>
+                </span>
+            <span class="demo-annotation">A <code>grid--sixths</code> grid.</span>
+            <pre>
+<code class="multiline">&lt;span class="grid--sixths">
+    &lt;span>First&lt;/span>
+    &lt;span>Second&lt;/span>
+    &lt;span class="grid__center-horizontal">Third&lt;/span>
+    &lt;span class="grid__center-vertical">Fourth&lt;/span>
+    &lt;span>Fifth&lt;/span>
+    &lt;span>Sixth&lt;/span>
+&lt;/span>
+</code>
+</pre>
+        </div>
+
+        <hr>
+
+        {# ##############
+              CONTAINERS
+           ############## #}
+        <h3>Containers</h3>
+        <p>
+            The grid system above only creates the grid and nothing more. Containers however, are meant for centering
+            content on your site.
+            The entire page you're viewing is actually a single <code>container__child</code> inside of a <code>container</code>!
+        </p>
+        <pre>
+<code class="multiline">&lt;body class="container">
+    &lt;div class="container__child">
+        ... your page-centered content
+    &lt;/div>
+&lt;/body>
+</code>
+</pre>
+        <p>
+            Containers automatically expand on smaller screens to fill more and more space. On mobile, the container
+            will fill almost the entire page width.
+        </p>
+        <hr>
+
+        {# ##############
+                  FLEX
+           ############## #}
+        <h3>Flex Centering</h3>
+        <p>
+            Flex is often useful for cases where using a grid would be overkill. Set up flex using:
+        </p>
+        <ul>
+            <li><code>flex--row</code> (enable flex + set direction to row)</li>
+            <li><code>flex--column</code> (enable flex + set direction to column)</li>
+        </ul>
+        <p>
+            Shorthands for alignment are:
+        </p>
+        <ul>
+            <li><code>flex--justify-start</code> (main axis: align to start)</li>
+            <li><code>flex--justify-center</code> (main axis: align to center)</li>
+            <li><code>flex--justify-end</code> (main axis: align to end)</li>
+            <li><code>flex--align-start</code> (cross axis: align to start)</li>
+            <li><code>flex--align-center</code> (cross axis: align to center)</li>
+            <li><code>flex--align-end</code> (cross axis: align to end)</li>
+        </ul>
+        <div class="mt40 mb40 flex flex--column flex--center">
+            <div id="flex-demo" class="p20 flex flex--column flex--center">
+                <span class="mb10">This is some flex-centered content.</span>
+            </div>
+            <pre>
+<code class="multiline">&lt;div class="flex flex--column flex--center">
+    &lt;span>This is some flex-centered content.&lt;/span>
+&lt;/div>
+</code>
+</pre>
+        </div>
+    </div>
+</div>
+
+<footer class="full-width text-center p20">
+    <span>made with love by <a href="https://github.com/DefaultSimon">Simon Goričar</a>, Copyright &copy; 2020 - 2022</span>
+</footer>
+
 </body>
 </html>

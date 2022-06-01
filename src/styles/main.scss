@@ -1,4 +1,29 @@
-html {
-  width: 100%;
-  height: 100%;
-}
+/**
+ * This SCSS file serves as an entry file for the entire global stylesheet.
+ */
+
+@use "variables" as vars;
+
+///
+// Load libraries and other base styles.
+///
+
+// normalize.css (browser resets and sensible defaults)
+@use "vendor/normalize";
+
+// pure.css (minimal boilerplate to build on, individual modules can be removed, see "vendor/purecss")
+@use "vendor/purecss";
+
+// include-media is loaded on demand with the "media" module.
+
+// bones is a tiny addon that includes very common style rules.
+@use "vendor/bones" with (
+    $font-family: vars.$font-family-native,
+);
+
+@use "fonts";
+
+
+///
+// Load your other layouts below.
+///

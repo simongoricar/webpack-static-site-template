@@ -6,13 +6,16 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Site</title>
 
-    <link href="../../styles/main.scss" rel="stylesheet">
-    <link href="./index.scss" rel="stylesheet">
+    {# NOTE: Don't include <link> or <script> tags here,
+       import SCSS and related stuff in your index.ts/js script instead! #}
 </head>
 <body>
-    <div id="index-demo">
-        <h1>Lorem ipsum!</h1>
-        <p>{% include "lorem-ipsum.njk" %}</p>
+    <div class="container" id="index-demo">
+        <div class="container__child mt25 mb25 p10">
+            <h1>Lorem ipsum!</h1>
+            {# Example of including content via Nunjucks. #}
+            <p>{% include "lorem-ipsum.njk" %}</p>
+        </div>
     </div>
 </body>
 </html>

@@ -1,0 +1,43 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-sass-guidelines"
+  ],
+  "rules": {
+    "indentation": 4,
+    "string-quotes": "double",
+    "max-empty-lines": 4,
+    "value-keyword-case": null,
+    "scss/at-mixin-pattern": ".*",
+    "selector-class-pattern": [
+      ".*",
+      {
+        "resolveNestedSelectors": true
+      }
+    ],
+    "scss/percent-placeholder-pattern": ".*",
+    "selector-no-qualifying-type": [
+      true,
+      {
+        "ignore": ["attribute", "class", "id"]
+      }
+    ],
+    "scss/at-function-pattern": ".*",
+    "selector-max-id": 1,
+    "max-nesting-depth": [
+      2,
+      {
+        "ignore": ["pseudo-classes"]
+      }
+    ],
+    "function-no-unknown": null,
+    "order/properties-alphabetical-order": null,
+    "declaration-empty-line-before": null,
+    "shorthand-property-no-redundant-values": null
+  },
+  "ignoreFiles": [
+    "src/styles/vendor/include-media/**/*",
+    "src/styles/vendor/normalize/**/*",
+    "src/styles/vendor/purecss/**/*"
+  ]
+}

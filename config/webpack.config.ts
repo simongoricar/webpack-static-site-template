@@ -1,4 +1,5 @@
 import { Configuration, LoaderContext } from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import fs from "node:fs";
 import path from "node:path";
@@ -11,11 +12,13 @@ import babelConfig from "../babel.config";
  * CONSTANTS AND TYPES
  */
 const IS_PRODUCTION: boolean = process.env.NODE_ENV === "production";
+console.log("Is production: " + IS_PRODUCTION);
+
 const IS_ONE_SHOT_BUILD: boolean = process.env.IS_SINGLE_BUILD === "true";
 
 const nunjucksTemplatePath = path.resolve("./src/templates");
 const nunjucksEnv: Environment = new Environment(
-  new FileSystemLoader(nunjucksTemplatePath, {watch: !IS_ONE_SHOT_BUILD, noCache: false})
+  new FileSystemLoader(nunjucksTemplatePath, { watch: !IS_ONE_SHOT_BUILD, noCache: false })
 );
 
 interface Page {
@@ -27,7 +30,7 @@ interface Page {
 /*
  * Resolve all available pages.
  */
-const pagesBasePath: string = path.resolve("./src/pages/");
+const pagesBasePath: string = path.resolve(path.join(__dirname, "../src/pages/"));
 const pages: Page[] = [];
 
 const pageNameList: string[] = fs.readdirSync(pagesBasePath);
@@ -93,7 +96,7 @@ console.log("Detected pages: ");
 pages.forEach((page: Page) => {
     let entryInfo: string = "";
     if (page.entryScriptPath !== null) {
-        entryInfo = `script entry: ${path.basename(page.entryScriptPath)}`
+        entryInfo = `script entry: ${path.basename(page.entryScriptPath)}`;
     }
 
     console.log(
@@ -111,7 +114,7 @@ pages.forEach((page: Page) => {
     if (page.entryScriptPath !== null) {
         webpackEntryMap[page.name] = {
             "import": page.entryScriptPath,
-            "filename": `scripts/${page.name}.js`,
+            "filename": `scripts/${page.name}-[hash].js`,
         };
     }
 });
@@ -126,60 +129,64 @@ const webpackPlugins: any[] = pages.map((page: Page) => {
     });
 });
 
-// TODO Nunjucks!
 
-const config: Configuration = {
+const config: Configuration & Record<string, any> = {
     mode: IS_PRODUCTION ? "production" : "development",
     entry: {
         ...webpackEntryMap,
     },
     plugins: [
         ...webpackPlugins,
+        new MiniCssExtractPlugin({
+            filename: IS_PRODUCTION ? "./styles/[name]-[hash].css" : "./styles/[name].css",
+            chunkFilename: IS_PRODUCTION ? "./styles/[name]-[hash].css" : "./styles/[name].css",
+        }),
     ],
     output: {
-        filename: "[name]-[hash][ext]",
+        filename: "[name]-[hash].js",
         clean: true,
         assetModuleFilename: "./assets/[name]-[hash][ext]",
+    },
+    devtool: IS_PRODUCTION ? "nosources-source-map" : "eval-source-map",
+    devServer: {
+        hot: true,
+        liveReload: true,
+        watchFiles: ["src/**/*"],
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                // This option ensures the shared stylesheet has its own chunk that is shared between pages.
+                siteStyles: {
+                    name: "site",
+                    test: /src[\\/]styles[\\/]/i,
+                    chunks: "all",
+                    minSize: 0,
+                }
+            }
+        }
     },
     module: {
         rules: [
             /*
              * The following rule takes care of emiting CSS files or hot-loading them when developing.
              */
-            ...(
-              IS_PRODUCTION ? [
-                  {
-                      test: /\.s[ac]ss$/i,
-                      // Emits the CSS file
-                      type: "asset/resource",
-                      generator: {
-                          filename: "./styles/[name]-[hash].css"
-                      }
-                  }
-              ] : [
-                  {
-                      test: /\.s[ac]ss$/i,
-                      use: [
-                          "style-loader",
-                          "css-loader"
-                      ]
-                  }
-              ]
-            ),
-            /*
-             * The following rule converts SCSS/Sass to CSS.
-             */
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    // Compiles Sass to CSS
+                    IS_PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader",
+                    // MiniCssExtractPlugin.loader,
+                    "css-loader",
                     {
                         loader: "sass-loader",
                         options: {
                             implementation: require("sass"),
-                            sourceMap: !IS_PRODUCTION
+                            sourceMap: !IS_PRODUCTION,
+                            sassOptions: {
+                                outputStyle: IS_PRODUCTION ? "compressed" : "expanded"
+                            }
                         }
-                    },
+                    }
                 ],
             },
             /*

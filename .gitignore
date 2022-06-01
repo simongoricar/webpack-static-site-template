@@ -9,5 +9,11 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-dist
 node_modules
+
+## Build tools
+dist
+
+## Cache
+.eslintcache
+.stylelintcache
