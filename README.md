@@ -12,7 +12,7 @@
 ---
 
 ## Goals
-- multi-page static site builder,
+- multipage static site builder,
 - write normal HTML for smaller sites, but with the ability to use [Nunjucks](https://mozilla.github.io/nunjucks/) templating for more complex tasks,
 - write [TypeScript](https://www.typescriptlang.org/) for type-safety with modern JS features (ESNext),
 - cleaner stylesheet writing with [SCSS/Sass](https://sass-lang.com/),
@@ -52,6 +52,13 @@ This project uses [Yarn](https://yarnpkg.com/) as the package manager. Follow th
 Familiarize yourself with the template by looking at the documentation below and varioud READMEs around the project.
 When you've looked around feel free to, if need be, start to customize the Webpack configuration, which is available in `config/webpack.config.ts`.
 
+### 2.1 Development server
+To start the development server (live reload of changes), run `yarn dev` (or `yarn dev --open` to open the webpage automatically).
+
+### 2.2 Production builds
+To build a production version of the site, run `yarn build`. The resulting site will be available in the `dist` directory.
+
+---
 
 ## 3. Structure
 The project structure is as follows:
