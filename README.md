@@ -130,3 +130,14 @@ This project includes several small libraries as a starting point:
 - `rem` units scaled to `10px` (`62.5%`, adjusted in `src/styles/ventor/bones/_bones.scss`).
 
 The larger modules are located in `src/styles/vendor` and can be easily removed if you do not need them for your project by deleting the relevant directory and removing the import in `main.scss`.
+
+---
+
+## 4. Quirks and known issues
+Issues / Pull requests regarding these quirks are most welcome.
+
+- Sometimes the initial page load after `yarn dev --open` looks incorrect; simply refresh the page once.
+- (S)CSS must not be imported directly from HTML/Nunjucks files, but from `.ts`/`.js` instead. 
+  If you break this quirk, the production build will still be fine, however the development builds will break. 
+  This seems to be due to the `html-loader` not being able to change `<link>` tags into `<script>` tags 
+  for hot-reload in development builds.
