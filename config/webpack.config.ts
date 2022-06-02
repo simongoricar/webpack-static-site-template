@@ -114,7 +114,7 @@ pages.forEach((page: Page) => {
     if (page.entryScriptPath !== null) {
         webpackEntryMap[page.name] = {
             "import": page.entryScriptPath,
-            "filename": `scripts/${page.name}-[hash].js`,
+            "filename": `scripts/${page.name}-[fullhash].js`,
         };
     }
 });
@@ -138,14 +138,14 @@ const config: Configuration & Record<string, any> = {
     plugins: [
         ...webpackPlugins,
         new MiniCssExtractPlugin({
-            filename: IS_PRODUCTION ? "./styles/[name]-[hash].css" : "./styles/[name].css",
-            chunkFilename: IS_PRODUCTION ? "./styles/[name]-[hash].css" : "./styles/[name].css",
+            filename: IS_PRODUCTION ? "./styles/[name]-[fullhash].css" : "./styles/[name].css",
+            chunkFilename: IS_PRODUCTION ? "./styles/[name]-[fullhash].css" : "./styles/[name].css",
         }),
     ],
     output: {
-        filename: "[name]-[hash].js",
+        filename: "[name]-[fullhash].js",
         clean: true,
-        assetModuleFilename: "./assets/[name]-[hash][ext]",
+        assetModuleFilename: "./assets/[name]-[fullhash][ext]",
     },
     devtool: IS_PRODUCTION ? "nosources-source-map" : "eval-source-map",
     devServer: {
@@ -205,7 +205,7 @@ const config: Configuration & Record<string, any> = {
                 test: /\.(jpg|jpeg|png|webp|gif|svg)/i,
                 type: "asset/resource",
                 generator: {
-                    filename: "./assets/images/[name]-[hash][ext]"
+                    filename: "./assets/images/[name]-[fullhash][ext]"
                 }
             },
             /*
