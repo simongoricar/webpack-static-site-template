@@ -1,6 +1,7 @@
 import { Configuration, LoaderContext } from "webpack";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -140,6 +141,18 @@ const config: Configuration & Record<string, any> = {
         new MiniCssExtractPlugin({
             filename: IS_PRODUCTION ? "./styles/[name]-[fullhash].css" : "./styles/[name].css",
             chunkFilename: IS_PRODUCTION ? "./styles/[name]-[fullhash].css" : "./styles/[name].css",
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                ...(
+                    fs.existsSync("src/static")
+                        ? [{ from: "src/static", to: "assets" }] : []
+                ),
+                ...(
+                    fs.existsSync("src/favicons")
+                        ? [{ from: "src/favicons", to: "." }] : []
+                ),
+            ]
         }),
     ],
     output: {

@@ -65,20 +65,6 @@ The project structure is as follows:
 
 ```markdown
 src
- |- assets
- |  > Place your own assets (images, JSON, etc.) in any way you want here!
- |  > 
- |  > When you want to use the images for example, simply refer to them from the 
- |    HTML file or TypeScript, like so:
- |  >  HTML:  <img src="../../assets/images/someimage.png" alt="Some image.">
- |  >    TS:  import someImage from "../../assets/images/someimage.png"
- |  >
- |  > In the case of HTML the src attribute will be replaced with the correct url of 
- |    the image in the final bundle. In the case of TypeScript the someImage variable 
- |    you import will actually contain just the path to the final image, which you may 
- |    use to dynamically set img.src, etc.
- |
- |
  |- pages
  |  > Place your pages here!
  |  > 
@@ -100,7 +86,29 @@ src
  |  >
  |  > See src/pages/README.md for more info.
  |
- |- styles
+ |- assets [optional directory]
+ |  > Place your own assets (images, JSON, etc.) in any way you want here!
+ |  >
+ |  > When you want to use the images for example, simply refer to them from the
+ |    HTML file or TypeScript, like so:
+ |  >  HTML:  <img src="../../assets/images/someimage.png" alt="Some image.">
+ |  >    TS:  import someImage from "../../assets/images/someimage.png"
+ |  >
+ |  > In the case of HTML the src attribute will be replaced with the correct url of
+ |    the image in the final bundle. In the case of TypeScript the someImage variable
+ |    you import will actually contain just the path to the final image, which you may
+ |    use to dynamically set img.src, etc.
+ |
+ |- static [optional directory]
+ |  > This directory is very similar to the `assets` directory, with one crucial difference:
+ |    it is intended for files that aren't referenced in code directly, but must be copied
+ |    into the build. The output directory is `dist/assets`.
+ |
+ |- favicons [optional directory]
+ |  > Place your favicons here - pretty much the same concept as the `static` folder, but
+ |    this time the output directory is the base `dist` folder.
+ |
+ |- styles [optional directory]
  |  > Place your global stylesheets here!
  |  >
  |  > Depending on the project, you will likely have some shared page styles, which

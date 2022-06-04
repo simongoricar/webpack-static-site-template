@@ -1,4 +1,4 @@
-## Pages
+## `pages`
 This directory should contain one subdirectory per each page you want to build.
 
 Additionally, please follow the expected structure as in this example:
