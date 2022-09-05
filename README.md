@@ -133,7 +133,7 @@ This project includes several small libraries as a starting point:
 - [**normalize.css**](https://necolas.github.io/normalize.css/) for a consistent base across browsers,
 - [**pure.css**](https://purecss.io/) as the style foundation,
 - [**include-media**](https://eduardoboucas.github.io/include-media/) as the SCSS library for @media queries. Reasonable breakpoints were set with help from [a bunch](https://www.freecodecamp.org/news/the-100-correct-way-to-do-css-breakpoints-88d6a5ba1862/) [of](https://flaviocopes.com/css-breakpoints/) [articles](https://howto-wordpress-tips.com/responsive-breakpoints-tutorial/) [and frameworks](https://polypane.app/blog/css-breakpoints-used-by-popular-css-frameworks/) and packed into the `modules/_media.scss` module with shorthands for easy work,
-- **Bones**, a personal set of very common rules compacted into mixins and CSS classes. Short documentation is available in `sample.njk`/`sample.html` and the source is available at `src/styles/vendor/bones`.
+- **Bones**, a personal set of very common CSS rules compacted into mixins and classes. Short documentation is available in `sample.njk`/`sample.html` and the source is available at `src/styles/vendor/bones`. It is possible you don't need it, in which case just remove it and its associated imports in the `main.scss` file ([these lines](https://github.com/DefaultSimon/webpack-static-site-template/blob/master/src/styles/main.scss#L20-L22)). Note that you'll need to re-add the `1rem = 10px` unit scaling rule (see below) yourself (just copy it).
 - A variety of basic sizing, animation-related and other mixins to get you started, available in `src/scss/modules`.
 - `rem` units scaled to `10px` (`62.5%`, adjusted in `src/styles/ventor/bones/_bones.scss`).
 
